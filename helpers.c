@@ -12,7 +12,7 @@ int calc_avg_time(short times[PROBES]) {
 
 void burst_transmit(int sockfd, char* target, int id, int ttl) {
 	for (int i = 0; i < PROBES; i++)
-		transmit(sockfd, target, ttl, id + i, ttl - 1);
+		transmit(sockfd, target, ttl, id + i, id - (i + ttl));
 }
 
 long long current_timestamp() {

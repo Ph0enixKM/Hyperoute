@@ -11,6 +11,9 @@ helpers:
 	cc -o helpers.o -c $(flags) helpers.c
 
 clean:
+	rm -f *.o
+
+distclean:
 	rm -f *.o $(name)
 
 install:
