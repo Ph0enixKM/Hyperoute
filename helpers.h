@@ -8,10 +8,17 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <errno.h>
+#include <netdb.h>
+#include <arpa/inet.h>
 
 struct response {
 	unsigned short id;
 	short time;
+};
+
+enum input_type {
+	IP,
+	HOSTNAME
 };
 
 // Calculate average time
@@ -27,12 +34,21 @@ long long current_timestamp();
 int get_color(int* colors, int ttl);
 
 // Gruard function for main
-bool guard(int sockfd, int argc, char* argv[]);
+bool guard(int sockfd, int argc, char* argv[], enum input_type* type);
 
 // Set bash color
 void set_color(int color);
 
 // Clear bash color
 void clear_color(void);
+
+// Check if given string is a valid IPv4 address
+bool is_valid_target(char* ip, enum input_type* type);
+
+// Convert hostname to IP address
+char *hostname_to_ip(const char *hostname);
+
+// Convert IP address to hostname
+char *ip_to_hostname(const char *ip_address);
 
 #endif
