@@ -9,6 +9,7 @@ int sockfd;
 unsigned short id;
 char* target_route = NULL;
 short times_burst[PROBES];
+char* routes[PROBES];
 
 // Bash color codes
 int colors[COLORS] = {
@@ -20,11 +21,16 @@ int colors[COLORS] = {
 };
 
 // Initialize global variables
-void init(enum input_type type, char* argv[]) {
+void init(void) {
 	srand(time(NULL));
 	id = rand();
 	sockfd = socket(AF_INET, SOCK_RAW, IPPROTO_ICMP);
 	memset(times_burst, -1, sizeof(times_burst));
+	memset(routes, 0, sizeof(routes));
+}
+
+// Resolve hostname to IPv4 address
+void handle_input(char* argv[], enum input_type type) {
 	target_route = argv[1];
 	if (type == HOSTNAME) {
 		target_route = hostname_to_ip(target_route);
@@ -32,42 +38,17 @@ void init(enum input_type type, char* argv[]) {
 	}
 }
 
-bool is_new_route(char* routes[PROBES], char* route) {
-	for (int i = 0; i < PROBES; i++) {
-		if (routes[i] == NULL) continue;
-		if (strcmp(routes[i], route) == 0) {
-			return false;
-		}
-	}
-	return true;
-}
-
-bool is_routes_empty(char* routes[PROBES]) {
-	for (int i = 0; i < PROBES; i++)
-		if (routes[i] != NULL) return false;
-	return true;
-}
-
-void store_route(char* routes[PROBES], char* route) {
-	for (int i = 0; i < PROBES; i++) {
-		if (routes[i] == NULL) {
-			routes[i] = route;
-			return;
-		}
-	}
-}
-
 int main(int argc, char* argv[]) {
 	int ttl = 0, last_ttl = 0, count = 0;
 	long long start, end = 0;
-	char* routes[PROBES];
-	memset(routes, 0, sizeof(routes));
 	bool success = false;
 	enum input_type type;
+	// Initialize
+	init();
 	// Guard check we can safely proceed to main loop
 	if (!guard(sockfd, argc, argv, &type)) return EXIT_FAILURE;
-	// Initialize
-	init(type, argv);
+	// Handle input
+	handle_input(argv, type);
 	// Main loop
 	while (true) {
 		if (count == 0) {

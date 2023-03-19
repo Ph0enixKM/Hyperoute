@@ -93,3 +93,28 @@ char *ip_to_hostname(const char *ip_address) {
     if (hostent_ptr == NULL) return NULL;
     return hostent_ptr->h_name;
 }
+
+bool is_new_route(char* routes[PROBES], char* route) {
+	for (int i = 0; i < PROBES; i++) {
+		if (routes[i] == NULL) continue;
+		if (strcmp(routes[i], route) == 0) {
+			return false;
+		}
+	}
+	return true;
+}
+
+bool is_routes_empty(char* routes[PROBES]) {
+	for (int i = 0; i < PROBES; i++)
+		if (routes[i] != NULL) return false;
+	return true;
+}
+
+void store_route(char* routes[PROBES], char* route) {
+	for (int i = 0; i < PROBES; i++) {
+		if (routes[i] == NULL) {
+			routes[i] = route;
+			return;
+		}
+	}
+}

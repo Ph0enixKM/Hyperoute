@@ -51,4 +51,13 @@ char *hostname_to_ip(const char *hostname);
 // Convert IP address to hostname
 char *ip_to_hostname(const char *ip_address);
 
+// Check if given route is new in the array or not
+bool is_new_route(char* routes[PROBES], char* route);
+
+// Check if given array is empty
+bool is_routes_empty(char* routes[PROBES]);
+
+// Add new route to the array
+void store_route(char* routes[PROBES], char* route);
+
 #endif
