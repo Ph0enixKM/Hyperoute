@@ -1,4 +1,15 @@
 #include "socket.h"
+#include <netinet/ip.h>
+#include <netinet/ip_icmp.h>
+#include <arpa/inet.h>
+#include <stdio.h>
+#include <errno.h>
+#include <sys/select.h>
+#include <stdbool.h>
+#include <assert.h>
+#include <string.h>
+#include <stdlib.h>
+#include "helpers.h"
 
 u_int16_t compute_icmp_checksum (const void *buff, int length) {
 	u_int32_t sum;
@@ -10,14 +21,17 @@ u_int16_t compute_icmp_checksum (const void *buff, int length) {
 	return (u_int16_t)(~(sum + (sum >> 16)));
 }
 
-bool is_receive_ready(int sockfd, int seconds) {
+bool is_receive_ready(int sockfd, long long* time) {
 	fd_set descriptors;
 	FD_ZERO (&descriptors);
 	FD_SET (sockfd, &descriptors);
+	long long before = current_timestamp();
 	struct timeval tv;
-	tv.tv_sec = seconds;
-	tv.tv_usec = 0;
+	tv.tv_sec = *time / 1000;
+	tv.tv_usec = (*time % 1000) * 1000;
 	int ready = select(sockfd+1, &descriptors, NULL, NULL, &tv);
+	long long after = current_timestamp();
+	*time -= (after - before);
 	return ready == 1;
 }
 

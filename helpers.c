@@ -1,5 +1,12 @@
 #include "helpers.h"
 #include "socket.h"
+#include <sys/time.h>
+#include <stdbool.h>
+#include <stdio.h>
+#include <errno.h>
+#include <netdb.h>
+#include <arpa/inet.h>
+#include <string.h>
 
 int calc_avg_time(short times[PROBES]) {
 	int sum = 0;

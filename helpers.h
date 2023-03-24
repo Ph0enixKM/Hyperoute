@@ -1,15 +1,10 @@
 #ifndef HELPERS_H
 #define HELPERS_H
 
+#include <stdbool.h>
+
 #define PROBES 3
 #define COLORS 20
-
-#include <sys/time.h>
-#include <stdbool.h>
-#include <stdio.h>
-#include <errno.h>
-#include <netdb.h>
-#include <arpa/inet.h>
 
 struct response {
 	unsigned short id;

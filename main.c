@@ -4,6 +4,8 @@
 #include <stdlib.h>
 #include <time.h>
 #include <unistd.h>
+#include <arpa/inet.h>
+#include <stdio.h>
 
 int sockfd;
 unsigned short id;
@@ -22,8 +24,7 @@ int colors[COLORS] = {
 
 // Initialize global variables
 void init(void) {
-	srand(time(NULL));
-	id = rand();
+	id = (unsigned short)getpid();
 	sockfd = socket(AF_INET, SOCK_RAW, IPPROTO_ICMP);
 	memset(times_burst, -1, sizeof(times_burst));
 	memset(routes, 0, sizeof(routes));
@@ -40,7 +41,7 @@ void handle_input(char* argv[], enum input_type type) {
 
 int main(int argc, char* argv[]) {
 	int ttl = 0, last_ttl = 0, count = 0;
-	long long start, end = 0;
+	long long start, end, time;
 	bool success = false;
 	enum input_type type;
 	// Initialize
@@ -84,9 +85,10 @@ int main(int argc, char* argv[]) {
 			burst_transmit(sockfd, target_route, id, ++ttl);
 			start = current_timestamp();
 			count = PROBES;
+			time = 1000;
 		}
 		// Check if we've received a response
-		if (is_receive_ready(sockfd, 1)) {
+		if (is_receive_ready(sockfd, &time)) {
 			end = current_timestamp();
 			struct packet* packet = receive(sockfd);
 			// Check if the response is valid and belongs to the current burst
